@@ -4,6 +4,25 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    /* TOP NAV LOGO */
+    const topLogo = document.querySelector(".navbar .logo");
+    if (topLogo) {
+        topLogo.innerHTML = '<img src="msanii-records-logo.png" alt="Msanii Records logo">';
+        topLogo.style.display = "flex";
+        topLogo.style.alignItems = "center";
+        topLogo.style.width = "145px";
+        topLogo.style.height = "58px";
+        topLogo.style.flexShrink = "0";
+
+        const logoImage = topLogo.querySelector("img");
+        if (logoImage) {
+            logoImage.style.width = "100%";
+            logoImage.style.height = "100%";
+            logoImage.style.objectFit = "contain";
+            logoImage.style.objectPosition = "left center";
+        }
+    }
+
     /* MOMENTS — USE THE NEW ORIGINAL MSANII PHOTOS */
     const momentImages = document.querySelectorAll(".gallery-card img");
     const momentFiles = ["bridge.jpg", "aircraft.jpg", "portrait.jpg"];
