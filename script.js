@@ -1,114 +1,61 @@
-/* =========================================================
-   MSANII RECORDS - MAIN JAVASCRIPT
-   ========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  const loader = document.querySelector('.site-loader');
+  window.addEventListener('load', () => {
+    setTimeout(() => loader?.classList.add('hidden'), 450);
+  });
 
-document.addEventListener("DOMContentLoaded", function () {
+  const header = document.querySelector('.site-header');
+  window.addEventListener('scroll', () => {
+    header?.classList.toggle('scrolled', window.scrollY > 24);
+  }, { passive: true });
 
-    /* TOP NAV LOGO */
-    const topLogo = document.querySelector(".navbar .logo");
-    if (topLogo) {
-        topLogo.innerHTML = '<img src="msanii-records-logo.png" alt="Msanii Records logo">';
-        topLogo.style.display = "flex";
-        topLogo.style.alignItems = "center";
-        topLogo.style.width = "145px";
-        topLogo.style.height = "58px";
-        topLogo.style.flexShrink = "0";
+  const menuToggle = document.querySelector('.menu-toggle');
+  const nav = document.querySelector('.main-nav');
+  menuToggle?.addEventListener('click', () => {
+    const open = nav?.classList.toggle('open') ?? false;
+    menuToggle.setAttribute('aria-expanded', String(open));
+  });
 
-        const logoImage = topLogo.querySelector("img");
-        if (logoImage) {
-            logoImage.style.width = "100%";
-            logoImage.style.height = "100%";
-            logoImage.style.objectFit = "contain";
-            logoImage.style.objectPosition = "left center";
-        }
-    }
-
-    /* MOMENTS — USE THE NEW ORIGINAL MSANII PHOTOS */
-    const momentImages = document.querySelectorAll(".gallery-card img");
-    const momentFiles = ["bridge.jpg", "aircraft.jpg", "portrait.jpg"];
-    const momentLabels = [
-        ["01 / BRIDGE", "A moment across the bridge."],
-        ["02 / AVIATION", "Sound, vision and movement."],
-        ["03 / PORTRAIT", "The people behind the moments."]
-    ];
-
-    momentImages.forEach(function (image, index) {
-        if (momentFiles[index]) {
-            image.src = momentFiles[index];
-            image.removeAttribute("loading");
-            image.parentElement.querySelector("small").textContent = momentLabels[index][0];
-            image.parentElement.querySelector("strong").textContent = momentLabels[index][1];
-        } else {
-            image.parentElement.style.display = "none";
-        }
+  nav?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      nav.classList.remove('open');
+      menuToggle?.setAttribute('aria-expanded', 'false');
     });
+  });
 
-    /* LOADER */
-    const loader = document.querySelector(".loader");
-    if (loader) {
-        window.addEventListener("load", function () {
-            setTimeout(function () {
-                loader.classList.add("hidden");
-                setTimeout(function () { loader.remove(); }, 900);
-            }, 800);
-        });
+  const sections = [...document.querySelectorAll('main section[id]')];
+  const navLinks = [...document.querySelectorAll('.main-nav a')];
+  const updateActiveLink = () => {
+    const marker = window.scrollY + window.innerHeight * 0.32;
+    let current = 'home';
+    for (const section of sections) {
+      if (section.offsetTop <= marker) current = section.id;
     }
+    navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${current}`));
+  };
+  window.addEventListener('scroll', updateActiveLink, { passive: true });
+  updateActiveLink();
 
-    /* NAVBAR */
-    const navbar = document.getElementById("navbar");
-    if (navbar) {
-        window.addEventListener("scroll", function () {
-            navbar.classList.toggle("scrolled", window.scrollY > 30);
-        });
-    }
-
-    /* SCROLL REVEAL */
-    const revealElements = document.querySelectorAll(".reveal");
-    const observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("visible");
-                observer.unobserve(entry.target);
-            }
-        });
+  const revealItems = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
     }, { threshold: 0.12 });
-    revealElements.forEach(function (element) { observer.observe(element); });
+    revealItems.forEach(item => observer.observe(item));
+  } else {
+    revealItems.forEach(item => item.classList.add('visible'));
+  }
 
-    /* MOBILE MENU */
-    const menu = document.querySelector(".menu");
-    const nav = document.querySelector(".navbar nav");
-    if (menu && nav) {
-        menu.addEventListener("click", function () {
-            nav.classList.toggle("open");
-            menu.setAttribute("aria-expanded", nav.classList.contains("open") ? "true" : "false");
-        });
-        nav.querySelectorAll("a").forEach(function (link) {
-            link.addEventListener("click", function () {
-                nav.classList.remove("open");
-                menu.setAttribute("aria-expanded", "false");
-            });
-        });
-    }
-
-    /* CONTACT FORM */
-    const form = document.getElementById("contactForm");
-    if (form) {
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
-            const status = document.getElementById("formStatus");
-            if (status) status.textContent = "Thank you — your enquiry has been received.";
-            form.reset();
-        });
-    }
-
-    /* CLOUD PARALLAX */
-    const clouds = document.querySelectorAll(".hero-cloud");
-    window.addEventListener("scroll", function () {
-        const y = window.scrollY;
-        clouds.forEach(function (cloud, index) {
-            const movementX = y * 0.025 * (index + 1);
-            const movementY = -(y * 0.035 * (index + 1));
-            cloud.style.transform = `translate3d(${movementX}px, ${movementY}px, 0)`;
-        });
-    });
+  const form = document.querySelector('#contactForm');
+  const status = document.querySelector('#formStatus');
+  form?.addEventListener('submit', event => {
+    event.preventDefault();
+    if (status) status.textContent = 'Thank you. Your enquiry has been prepared — please contact Msanii Records directly to confirm the booking.';
+    form.reset();
+  });
 });
